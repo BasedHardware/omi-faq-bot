@@ -25,3 +25,9 @@ class OmiDiscordBot(commands.Bot):
         logger.info(f'Logged in as {self.user}')
         logger.info('------')
         logger.info('------')
+
+
+    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        """Handles all command errors."""
+        if isinstance(error, commands.CommandNotFound):
+            return
