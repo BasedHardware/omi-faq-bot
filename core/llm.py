@@ -2,6 +2,12 @@ import os
 from google import genai
 from openai import OpenAI
 from dotenv import load_dotenv
+import tomli
+
+with open("model.toml", "rb") as f:
+    model_config = tomli.load(f)
+
+
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
 
@@ -19,7 +25,7 @@ class LLMService:
         if self.gemini_key:
             print("INFO: Initializing with Gemini client.")
             self.provider = "gemini"
-            self.model_name = "gemini-2.5-flash" # Default Gemini Model
+            self.model_name = model_config["gemini_model"]
             
             
             self.client = genai.Client(api_key=self.gemini_key)
@@ -27,7 +33,7 @@ class LLMService:
         elif self.openai_key:
             print("INFO: Initializing with OpenAI client.")
             self.provider = "openai"
-            self.model_name = "gpt-4o-mini" # Default OpenAI Model (or gpt-4o)
+            self.model_name = model_config["openai_model"]
             
             # OpenAI client initialization
             self.client = OpenAI(api_key=self.openai_key)
@@ -93,5 +99,5 @@ Your role is to provide accurate, friendly, and concise answers based on the FAQ
 
 
         except Exception as e:
-            pass
-            #return f"An error occurred with {self.provider} while generating the answer: {e}"
+            #pass
+            return f"An error occurred with {self.provider} while generating the answer: {e}"
