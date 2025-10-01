@@ -21,22 +21,23 @@ class LLMService:
         self.model_name = None
         self.provider = None
 
-        
-        if self.gemini_key:
-            print("INFO: Initializing with Gemini client.")
-            self.provider = "gemini"
-            self.model_name = model_config["gemini_model"]
-            
-            
-            self.client = genai.Client(api_key=self.gemini_key)
-            
-        elif self.openai_key:
+        if self.openai_key:
             print("INFO: Initializing with OpenAI client.")
             self.provider = "openai"
             self.model_name = model_config["openai_model"]
             
             # OpenAI client initialization
             self.client = OpenAI(api_key=self.openai_key)
+
+
+        elif self.gemini_key:
+            print("INFO: Initializing with Gemini client.")
+            self.provider = "gemini"
+            self.model_name = model_config["gemini_model"]
+            
+            
+            self.client = genai.Client(api_key=self.gemini_key)
+
             
         else:
             raise ValueError(
@@ -49,17 +50,7 @@ class LLMService:
         """
         
         # NOTE: The system prompt (role, guidelines) is crucial for RAG performance
-        system_instruction = f"""You are a helpful assistant for the Omi community Discord server.
-Your role is to provide accurate, friendly, and concise answers based on the FAQ knowledge base.
-
-    Guidelines:
-        - Use the provided context to answer questions accurately
-        - If the context contains the answer, provide it clearly
-        - If the context doesn't fully answer the question, mention what information is available
-        - Keep answers concise but complete
-        - Format answers for Discord (you can use **bold**, *italic*, etc.)
-        """
-
+        system_instruction = model_config["system_instruction"]
         user_prompt = f"""Question: {question}
 
         Context:

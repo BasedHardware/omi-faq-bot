@@ -58,14 +58,17 @@ class Faq(commands.Cog):
                     await message.reply(embed=embed)
 
 
-                # Need a better way to handle this... 
+                ## When no context is returned 
                 else:
+                    context = "No FAQ entries matched. Please provide a general but cautious response. If unsure, say so."
+                    llm_answer = self.llm.generate_answer(question, context)
                     embed = discord.Embed(
-                        title="❓ No Answer Found",
-                        description="I couldn't find a relevant answer to your question. Please try rephrasing or ask a different question.",
+                        title="Generalized Answer",
+                        description=llm_answer,
                         color=discord.Color.orange()
                     )
-                    embed.set_footer(text="Tip: Try using different keywords or be more specific.")
+                    embed.set_footer(text="Tip: Try using different keywords for a more specific reply or contact the support team.")
+
                     await message.reply(embed=embed)
             elif not self.indexer.get_stats()['index_loaded']:
                 await message.reply("⚠️ The FAQ index is not loaded. Please ask an admin to run the `!index` command.")
