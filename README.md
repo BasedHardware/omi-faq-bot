@@ -65,10 +65,3 @@ $index
 * `$sync` — Syncs slash commands
 
 ---
-
-## Running Indexer Tests
-
-```bash
-python test/indexer_test.py
-python test/llm_issolation.py
-```
