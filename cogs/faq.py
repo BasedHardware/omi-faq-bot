@@ -43,11 +43,8 @@ class Faq(commands.Cog):
 
                 if results:
                     context = "\n".join([f"Question: {r['question']}\nAnswer: {r['answer']}" for r in results])
-                    print(context)
+                    #print(context)
                     llm_answer = self.llm.generate_answer(question, context)
-                    print(">>>>>>>>>>>>>>.")
-                    print("gemini test")
-                    print(llm_answer)
                     
                     embed = discord.Embed(
                         title="💡 Answer",
