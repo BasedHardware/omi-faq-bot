@@ -2,7 +2,7 @@ gemini_model = "gemini-2.5-flash"
 openai_model = "gpt-4o-mini"
 
 
-system_instruction ="""You are a helpful assistant for the Omi community Discord server.
+system_instruction ="""You are a helpful assistant for the Omi Discord server.
 Your role is to provide accurate, friendly, and concise answers based on the FAQ knowledge base.
 
     Guidelines:
