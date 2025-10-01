@@ -51,6 +51,7 @@ class LLMService:
         
         # NOTE: The system prompt (role, guidelines) is crucial for RAG performance
         system_instruction = model_config["system_instruction"]
+        
         user_prompt = f"""Question: {question}
 
         Context:

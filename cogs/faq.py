@@ -57,7 +57,15 @@ class Faq(commands.Cog):
 
                 ## When no context is returned 
                 else:
-                    context = "No FAQ entries matched. Please provide a general but cautious response. If unsure, say so."
+                    context = """
+                            No FAQ entries matched. Please provide a general but cautious response. 
+                            If you are unsure, say so clearly and explain your reasoning. 
+
+                            When helpful, also explain how I can be asked questions. 
+                            To ask me something, you can either mention me in a message (e.g., `@OmiB your question`) 
+                            or reply directly to one of my messages.
+                            """
+
                     llm_answer = self.llm.generate_answer(question, context)
                     embed = discord.Embed(
                         title="Generalized Answer",
