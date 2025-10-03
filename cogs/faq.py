@@ -22,7 +22,7 @@ class Faq(commands.Cog):
     @commands.is_owner()
     async def reload_index(self, ctx):
         """Reloads the FAQ index."""
-        if self.indexer.load_index():
+        if await self.indexer.load_index():
             await ctx.send("✅ FAQ index reloaded successfully.")
         else:
             await ctx.send("❌ Error reloading FAQ index.")

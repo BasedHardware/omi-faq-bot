@@ -42,17 +42,17 @@ class FAQIndexer:
             self.model_name = 'sentence-transformers/all-MiniLM-L6-v2'
             
             # Load index on initialization
-            self.load_index()
+            asyncio.create_task(self.load_index())
     
-    def load_index(self) -> bool:
+    async def load_index(self) -> bool:
         """Load the sentence-transformer index from disk."""
         try:
             if not os.path.exists(self.index_path):
                 logger.warning("Sentence-transformer index not found. Creating new index...")
-                return self.create_index()
+                return await self.create_index()
             
-            with open(self.index_path, "rb") as f:
-                data = joblib.load(f)
+            async with self._lock:
+                data = await asyncio.to_thread(joblib.load, self.index_path)
                 self.kb_data = data["kb"]
                 self.embeddings = data["embeddings"]
                 self.questions = data.get("questions", [entry["question"] for entry in self.kb_data])
@@ -69,40 +69,40 @@ class FAQIndexer:
             logger.error(f"Error loading index: {e}")
             return False
     
-    def create_index(self) -> bool:
+    async def create_index(self) -> bool:
         """Create a new sentence-transformer index from the FAQ data."""
         try:
             if not os.path.exists(self.faq_path):
                 logger.error(f"FAQ file not found at {self.faq_path}")
                 return False
             
-            with open(self.faq_path, "r", encoding="utf-8") as f:
-                self.kb_data = json.load(f)
-            
-            self.questions = [entry["question"] for entry in self.kb_data]
-            
-            documents = []
-            for entry in self.kb_data:
-                doc_text = f"{entry['question']} {entry.get('keywords', '')} {entry['answer'][:200]}"
-                documents.append(doc_text)
-            
-            self.model = SentenceTransformer(self.model_name)
-            self.embeddings = self.model.encode(documents, convert_to_tensor=True)
-            
-            self.last_indexed = datetime.now()
-            self.index_version += 1
-            
-            index_data = {
-                "kb": self.kb_data,
-                "embeddings": self.embeddings,
-                "questions": self.questions,
-                "last_indexed": self.last_indexed,
-                "version": self.index_version
-            }
-            
-            os.makedirs(self.data_dir, exist_ok=True)
-            with open(self.index_path, "wb") as f:
-                joblib.dump(index_data, f)
+            async with self._lock:
+                with open(self.faq_path, "r", encoding="utf-8") as f:
+                    self.kb_data = json.load(f)
+                
+                self.questions = [entry["question"] for entry in self.kb_data]
+                
+                documents = []
+                for entry in self.kb_data:
+                    doc_text = f"{entry['question']} {entry.get('keywords', '')} {entry['answer'][:200]}"
+                    documents.append(doc_text)
+                
+                self.model = SentenceTransformer(self.model_name)
+                self.embeddings = await asyncio.to_thread(self.model.encode, documents, convert_to_tensor=True)
+                
+                self.last_indexed = datetime.now()
+                self.index_version += 1
+                
+                index_data = {
+                    "kb": self.kb_data,
+                    "embeddings": self.embeddings,
+                    "questions": self.questions,
+                    "last_indexed": self.last_indexed,
+                    "version": self.index_version
+                }
+                
+                os.makedirs(self.data_dir, exist_ok=True)
+                await asyncio.to_thread(joblib.dump, index_data, self.index_path)
             
             logger.info(f"Index created successfully. Version: {self.index_version}, "
                        f"Documents: {len(self.kb_data)}")
@@ -136,7 +136,7 @@ class FAQIndexer:
             min_score = threshold or self.min_score_threshold
             k = top_k or self.top_k_results
             
-            query_embedding = self.model.encode(query, convert_to_tensor=True)
+            query_embedding = await asyncio.to_thread(self.model.encode, query, convert_to_tensor=True)
             
             cos_scores = util.cos_sim(query_embedding, self.embeddings)[0]
             
