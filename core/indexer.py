@@ -1,4 +1,3 @@
-
 import json
 import joblib
 import os
@@ -113,7 +112,7 @@ class FAQIndexer:
             logger.error(f"Error creating index: {e}")
             return False
     
-    async def search(self, query: str, threshold: Optional[float] = None) -> List[Dict]:
+    async def search(self, query: str, threshold: Optional[float] = None, top_k: Optional[int] = None) -> List[Dict]:
         """
         Search the FAQ index for matching questions.
         
@@ -135,12 +134,13 @@ class FAQIndexer:
 
         try:
             min_score = threshold or self.min_score_threshold
+            k = top_k or self.top_k_results
             
             query_embedding = self.model.encode(query, convert_to_tensor=True)
             
             cos_scores = util.cos_sim(query_embedding, self.embeddings)[0]
             
-            top_results = torch.topk(cos_scores, k=self.top_k_results)
+            top_results = torch.topk(cos_scores, k=k)
             
             results = []
             for score, idx in zip(top_results[0], top_results[1]):

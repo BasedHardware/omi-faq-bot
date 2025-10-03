@@ -32,6 +32,10 @@ Create a `.env` file in the project root and add your bot token:
 
 ```env
 TOKEN=your_bot_token
+
+// DEFAULT IS OPENAI 
+OPENAI_API_KEY=<token>
+GEMINI_API_KEY=<token>
 ```
 
 ### Running the Bot
@@ -61,9 +65,3 @@ $index
 * `$sync` — Syncs slash commands
 
 ---
-
-## Running Indexer Tests
-
-```bash
-python test/indexer_test.py
-```

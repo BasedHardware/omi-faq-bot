@@ -298,5 +298,9 @@
   {
     "question": "How does Audio Recording work? Where is data stored?",
     "answer": "The devices records audio and streams it to the mobile phone. Phone sends audio to transcription servies and saves them. Your transcriptions are securely stored in the cloud, but you can switch it to local-only."
+  },
+  {
+   "question": "how to ask Omi a question ?",
+   "answer" : "Press and hold the button until it vibrates, ask your question, then release to get the answer in Omi chat or on your phone"
   }
 ]
