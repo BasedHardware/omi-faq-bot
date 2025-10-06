@@ -10,7 +10,7 @@ import os
 load_dotenv()
 Gtoken = os.getenv('GITHUB_ACCESS_TOKEN')
 if not Gtoken:
-    logging.error("GITHUB ACCESS TOKEN not found in .env file.")
+    logging.error("GITHUB ACCESS TOKEN NOT FOUND IN .ENV FILE.")
     exit()
 
 with open("config.toml", "rb") as f:
