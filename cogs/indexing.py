@@ -17,7 +17,7 @@ class Indexing(commands.Cog):
         """Indexes the FAQ data using Sentence Transformers."""
         try:
             # The index creation is now handled by the FAQIndexer class
-            if self.indexer.create_index():
+            if await self.indexer.create_index():
                 stats = self.indexer.get_stats()
                 embed = discord.Embed(
                     title="✅ Indexing Complete",

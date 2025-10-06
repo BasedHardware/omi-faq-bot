@@ -3,6 +3,9 @@ from google import genai
 from openai import OpenAI
 from dotenv import load_dotenv
 import tomli
+import logging
+
+logger = logging.getLogger(__name__)
 
 with open("model.toml", "rb") as f:
     model_config = tomli.load(f)
@@ -22,7 +25,7 @@ class LLMService:
         self.provider = None
 
         if self.openai_key:
-            print("INFO: Initializing with OpenAI client.")
+            logger.info("Initializing with OpenAI client.")
             self.provider = "openai"
             self.model_name = model_config["openai_model"]
             
@@ -31,7 +34,7 @@ class LLMService:
 
 
         elif self.gemini_key:
-            print("INFO: Initializing with Gemini client.")
+            logger.info("Initializing with Gemini client.")
             self.provider = "gemini"
             self.model_name = model_config["gemini_model"]
             

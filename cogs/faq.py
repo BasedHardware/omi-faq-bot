@@ -1,8 +1,15 @@
 import discord
 from discord.ext import commands
-import os
 from core.indexer import FAQIndexer
 from core.llm import LLMService
+import tomli
+import asyncio
+
+
+
+with open("model.toml", "rb") as f:
+    model_config = tomli.load(f)
+
 
 class Faq(commands.Cog):
     def __init__(self, bot):
@@ -15,7 +22,7 @@ class Faq(commands.Cog):
     @commands.is_owner()
     async def reload_index(self, ctx):
         """Reloads the FAQ index."""
-        if self.indexer.load_index():
+        if await self.indexer.load_index():
             await ctx.send("✅ FAQ index reloaded successfully.")
         else:
             await ctx.send("❌ Error reloading FAQ index.")
@@ -37,7 +44,7 @@ class Faq(commands.Cog):
                     question = tagged_message.content
                 except:
                     pass
-
+            
             if question:
                 results = await self.indexer.search(question, top_k=5)
 
@@ -55,27 +62,38 @@ class Faq(commands.Cog):
                     await message.reply(embed=embed)
 
 
-                ## When no context is returned 
-                else:
-                    context = """
-                            No FAQ entries matched. Please provide a general but cautious response. 
-                            If you are unsure, say so clearly and explain your reasoning. 
+                
+                elif not question:
+                    pass
 
-                            When helpful, also explain how I can be asked questions. 
-                            To ask me something, you can either mention me in a message or reply directly to one of my messages.
-                            """
+                ## When no context is returned
+                else:
+
+                    context = model_config["unmatched_queries"]
 
                     llm_answer = self.llm.generate_answer(question, context)
+
+                    # Check if LLM suggests mentioning Moderator
+                    mention_moderator = "[MENTION_MODERATOR]" in llm_answer
+                    llm_answer = llm_answer.replace("[MENTION_MODERATOR]", "").strip()
+
+
                     embed = discord.Embed(
-                        title="Generalized Answer",
+                        title="OMI",
                         description=llm_answer,
                         color=discord.Color.orange()
                     )
                     embed.set_footer(text="Tip: Try using different keywords for a more specific reply or contact the support team.")
-
+                    
                     await message.reply(embed=embed)
+
+                    mod_id = model_config["MODERATOR_ID"]
+                    if (mention_moderator): 
+                        await asyncio.sleep(10)  # Wait 10 seconds
+                        await message.reply(f"<@{mod_id}> - A user needs your assistance. **Please update `FAQ.json` with the new information if needed.**")
+
             elif not self.indexer.get_stats()['index_loaded']:
-                await message.reply("⚠️ The FAQ index is not loaded. Please ask an admin to run the `!index` command.")
+                await message.reply("⚠️ The FAQ index is not loaded. Please ask an admin to run the `$index` command.")
 
 
 async def setup(bot):
