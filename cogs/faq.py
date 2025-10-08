@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from core.indexer import FAQIndexer
+from core.query_doc import query_docs
 from core.llm import LLMService
 import tomli
 import asyncio
@@ -46,13 +47,23 @@ class Faq(commands.Cog):
                     pass
             
             if question:
+                results_doc = query_docs(question)
                 results = await self.indexer.search(question, top_k=5)
 
-                if results:
-                    context = "\n".join([f"Question: {r['question']}\nAnswer: {r['answer']}" for r in results])
-                    #print(context)
-                    llm_answer = self.llm.generate_answer(question, context)
+                if results_doc or results:
+
+                    context_json = "\n".join([f"Question: {r['question']}\nAnswer from json: {r['answer']}" for r in results])
                     
+                    context_doc = "\n".join([
+                                f"Document: {r['filename']}\nExcerpt: {r['text']}"
+                                for r in results_doc
+                            ])
+
+
+                    #print(context)
+                    llm_answer = self.llm.generate_answer(question, context_doc, context_json)
+                    
+                    print(llm_answer)
                     embed = discord.Embed(
                         title="💡 Answer",
                         description=llm_answer,
@@ -71,7 +82,7 @@ class Faq(commands.Cog):
 
                     context = model_config["unmatched_queries"]
 
-                    llm_answer = self.llm.generate_answer(question, context)
+                    llm_answer = self.llm.generate_answer(question, context, context)
 
                     # Check if LLM suggests mentioning Moderator
                     mention_moderator = "[MENTION_MODERATOR]" in llm_answer

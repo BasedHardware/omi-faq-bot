@@ -24,28 +24,12 @@
     "answer": "You can contribute to the Omi project by forking the repository, making changes, and creating a Pull Request. There are paid bounties available for some tasks, which can be found by filtering issues with the 'Paid Bounty' label. You can also contribute to the documentation by modifying files in the GitHub docs folder. Significant contributions can earn you rewards like a free DEV KIT device, transcription credits, or a special Contributor role in Discord."
   },
   {
-    "question": "How do I get started with the Omi DevKit 2?",
-    "answer": "To get started with the Omi DevKit 2, you can order an assembled device from the Based Hardware website. Alternatively, you can update the firmware through the Omi AI app, download a pre-built version from the Omi Github repo, or compile it yourself by following the firmware compilation guide."
-  },
-  {
     "question": "What are the specifications for the omiGlass DevKit hardware components?",
     "answer": "The omiGlass DevKit hardware components include a Seeed Studio XIAO ESP32 S3 Sense board, six 150mAh batteries or similar, one 250mAh battery, wires, and hinges. The current design does not include a switch, but a switch can be added. A 3D printer is also needed for the hardware components if building your own."
   },
   {
-    "question": "What is the `omi-scan` command-line tool used for in the Omi Python SDK?",
-    "answer": "The `omi-scan` command-line tool is used to scan for nearby Bluetooth devices. The output shows a list of devices with their names and MAC addresses, which you can then use to connect to a specific Omi device."
-  },
-  {
     "question": "What is the Omi DevKit 2, and what are its key features?",
     "answer": "The Omi DevKit 2 is an upgraded version of the DevKit 1, retaining the necklace form factor but adding an 8GB onboard storage and a speaker. It replaces the on/off switch with a programmable button and can operate in standalone mode, but still requires the Omi app for processing. It runs on the Xiao nRF52840 SoC."
-  },
-  {
-    "question": "How do you add a new file to the documentation?",
-    "answer": "To add a new file to the documentation, you create an MDX file and update the `docs.json` file with the new page's path. The new file will not appear in the navigation menu automatically and must be explicitly added to the `navigation` field in `docs.json`."
-  },
-  {
-    "question": "What are the requirements for building the Omi app?",
-    "answer": "The Omi app is a Flutter-based mobile application. To build it, you need the Flutter SDK, Xcode (for iOS), Android Studio (for Android), CocoaPods (for iOS), and the NDK (for building Opus for ARM devices). The `app/setup.sh` script is available for automatic setup for iOS, Android, and macOS."
   },
   {
     "question": "How do you manually update the firmware on DevKit versions (DK1 & DK2)?",
@@ -56,24 +40,8 @@
     "answer": "When you speak with the Omi device connected to your app, communications are recorded and summarized. Important action items and events are highlighted to form a 'Conversation'. The app waits 2 minutes after no sound to finalize the communication and create a Conversation."
   },
   {
-    "question": "What are Omi Apps and what can they do?",
-    "answer": "Omi apps are modular extensions that enhance core features. They can modify app behavior, analyze conversations, connect with external services, chat with memories, extract specific information, automate tasks, and analyze conversations in real-time for insights."
-  },
-  {
-    "question": "What are the three types of Omi Apps?",
-    "answer": "The three types are: 1) External Integrations (connect third-party services like Zapier, Notion, BookWatch), 2) Chat Apps (mimic personalities or provide advice), and 3) Memory Apps (triggered when memories are created, like Insight Extractor)."
-  },
-  {
     "question": "How do I update DevKit2 firmware?",
     "answer": "Open the case from the USB side, locate the reset button (red-colored), connect via USB-C cable, press reset button twice quickly, verify '/Volumes/XIAO-SENSE' appears, download bootloader 0.9.0.uf2 and Omi_DK2_v2.0.10.uf2 files, drag bootloader first, wait for ejection, double-tap reset again, drag firmware file, then restart the app."
-  },
-  {
-    "question": "How do I charge DevKit2?",
-    "answer": "For first-time users, press and hold the center for 2-3 seconds until you hear a buzzer and feel vibration with red light. Connect to any compatible charger - a blinking green light should appear indicating charging. If already connected to app, you'll see green light alongside red or blue light."
-  },
-  {
-    "question": "What are the limitations of Friend V1 compared to DevKit2?",
-    "answer": "Friend V1 limitations: always needed app connection, no onboard memory, no speaker or dedicated button. DevKit2 overcomes these with onboard SD card storage, programmable button, and small speaker."
   },
   {
     "question": "How do I use DevKit2's SD card sync feature?",
@@ -88,20 +56,12 @@
     "answer": "Red light: device is on but not connected to Omi AI app. Light red/orange light: device is charging. Blue light: device is connected to Omi AI app and ready."
   },
   {
-    "question": "what's the difference between Omi and Omi Dev Kit",
-    "answer" : "Changed answer to something else.."
-  },
-  {
     "question": "How do I connect my Omi device to the app?",
     "answer": "Download the Omi AI app from App Store (iOS) or Play Store (Android), open the app and follow on-screen instructions to pair your device. When successful, the device light will turn blue."
   },
   {
     "question": "How do I talk with my Omi device?",
     "answer": "Once connected, tap and hold the device, ask any question or share a thought, release your finger when done speaking. Omi will reply via phone notification and save the response in the chat inside the app."
-  },
-  {
-    "question": "How do I charge my Omi device?",
-    "answer": "Make sure device is functioning properly and turned on (red or blue light visible), place it on the charger and connect charger to power adapter or laptop. Orange light should appear indicating charging. First-time charging may take a few seconds to 2-3 minutes for light to appear."
   },
   {
     "question": "What languages does Omi support?",
@@ -272,10 +232,6 @@
     "answer": "Ensure latest app version, check Bluetooth, restart app and glasses, reset glasses by holding power for 15 seconds."
   },
   {
-    "question": "How to fix poor audio quality on Omi Glass?",
-    "answer": "Check microphone isn’t blocked, adjust fit, use a quiet environment, and try different speaking volumes."
-  },
-  {
     "question": "How to fix camera or visual issues on Omi Glass?",
     "answer": "Clean lenses, check camera permissions, adjust glasses angle, restart app if frozen."
   },
@@ -284,16 +240,8 @@
     "answer": "Omi CV1 has dual mics, dual SoCs, Wi-Fi, no speaker, smaller battery; Dev Kit 2 has one mic, single SoC, no Wi-Fi, has speaker, bigger battery."
   },
   {
-    "question": "Is there a subscription?",
-    "answer": "Yes! Starting August 22, 2025, we introduced the Omi Unlimited subscription alongside the free plan. You can learn more here: https://help.omi.me/en/articles/12058411-understanding-omi-subscriptions"
-  },
-  {
     "question": "Does Omi have a macOS application?",
     "answer": "Yes, you can download the Omi macOS application from: https://www.omi.me/pages/download"
-  },
-  {
-    "question": "What is your return policy?",
-    "answer": "You can view the return policy on the checkout page."
   },
   {
     "question": "How does Audio Recording work? Where is data stored?",

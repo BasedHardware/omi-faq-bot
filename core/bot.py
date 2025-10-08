@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+import asyncio
 
 #bot_configs = BotConfigs()
 
@@ -19,7 +20,11 @@ class OmiDiscordBot(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or('$'), intents=intents, description=description)
 
     async def setup_hook(self) -> None:
-        pass
+        from .omi_docs_downloader import download_omi_docs
+        # Run synchronous function in thread-safe way
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, download_omi_docs)
+
 
     async def on_ready(self):
         logger.info(f'Logged in as {self.user}')

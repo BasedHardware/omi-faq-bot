@@ -47,7 +47,7 @@ class LLMService:
                 "No valid API key found. Please set GEMINI_API_KEY or OPENAI_API_KEY in your .env file."
             )
 
-    def generate_answer(self, question, context):
+    def generate_answer(self, question, context_doc, context_json):
         """
         Generates an answer using the initialized LLM provider (Gemini or OpenAI).
         """
@@ -58,7 +58,9 @@ class LLMService:
         user_prompt = f"""Question: {question}
 
         Context:
-        {context}
+        CHECK THE CONTEXT DOC FIRST... INFORMATION THERE ARE MORE LIKELY CORRECT
+        {context_doc}
+        {context_json}
         """
 
         try:
