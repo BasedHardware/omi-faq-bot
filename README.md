@@ -36,6 +36,7 @@ TOKEN=your_bot_token
 // DEFAULT IS OPENAI 
 OPENAI_API_KEY=<token>
 GEMINI_API_KEY=<token>
+GITHUB_ACCESS_TOKEN=<token>
 ```
 
 ### Running the Bot

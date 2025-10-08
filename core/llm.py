@@ -7,7 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-with open("model.toml", "rb") as f:
+with open("config.toml", "rb") as f:
     model_config = tomli.load(f)
 
 

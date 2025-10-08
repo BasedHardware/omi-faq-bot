@@ -7,3 +7,4 @@ pynacl==1.6.0
 openai==2.0.0
 google-genai==1.39.1
 tomli==2.2.1
+pygithub==2.8.1
