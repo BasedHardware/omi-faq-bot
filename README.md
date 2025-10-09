@@ -13,7 +13,7 @@
 * Create a virtual environment:
 
   ```bash
-  uv venv env
+  uv venv .venv
   ```
 * Activate the virtual environment:
 
@@ -23,7 +23,7 @@
 * Install dependencies:
 
   ```bash
-  uv pip install -r requirements.txt
+  uv sync
   ```
 
 ### Configuration
