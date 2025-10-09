@@ -6,6 +6,7 @@ from core.indexer import FAQIndexer
 # Get the absolute path to the project root
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 class Indexing(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -22,10 +23,12 @@ class Indexing(commands.Cog):
                 embed = discord.Embed(
                     title="✅ Indexing Complete",
                     description=f"Successfully indexed {stats['documents']} FAQ entries with Sentence Transformers!",
-                    color=discord.Color.green()
+                    color=discord.Color.green(),
                 )
-                embed.add_field(name="Documents", value=stats['documents'], inline=True)
-                embed.add_field(name="Algorithm", value="Sentence Transformers", inline=True)
+                embed.add_field(name="Documents", value=stats["documents"], inline=True)
+                embed.add_field(
+                    name="Algorithm", value="Sentence Transformers", inline=True
+                )
                 embed.set_footer(text="Ready to answer questions!")
                 await ctx.send(embed=embed)
             else:
@@ -38,7 +41,9 @@ class Indexing(commands.Cog):
     async def test_index(self, ctx, *, query: str = None):
         """Test the index with a sample query"""
         if not query:
-            await ctx.send("Please provide a query to test. Example: `!test_index what is omi`")
+            await ctx.send(
+                "Please provide a query to test. Example: `!test_index what is omi`"
+            )
             return
 
         try:
@@ -47,7 +52,7 @@ class Indexing(commands.Cog):
             embed = discord.Embed(
                 title="🔍 Index Test Results",
                 description=f"Query: **{query}**",
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
 
             if not results:
@@ -57,13 +62,14 @@ class Indexing(commands.Cog):
                     embed.add_field(
                         name=f"{i}. Score: {result['score']:.2f} - Confidence: {result['confidence']}",
                         value=f"**Q:** {result['question']}\n**A:** {result['answer'][:100]}...",
-                        inline=False
+                        inline=False,
                     )
 
             await ctx.send(embed=embed)
 
         except Exception as e:
             await ctx.send(f"❌ Error testing index: {str(e)}")
+
 
 async def setup(bot):
     await bot.add_cog(Indexing(bot))

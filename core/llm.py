@@ -11,15 +11,21 @@ with open("model.toml", "rb") as f:
     model_config = tomli.load(f)
 
 
+if os.getenv("OPENAI_MODEL"):
+    model_config["openai_model"] = os.getenv("OPENAI_MODEL")
 
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
+if os.getenv("GEMINI_MODEL"):
+    model_config["gemini_model"] = os.getenv("GEMINI_MODEL")
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
 
 class LLMService:
     def __init__(self):
-        
+
         self.gemini_key = os.getenv("GEMINI_API_KEY")
         self.openai_key = os.getenv("OPENAI_API_KEY")
-        
+
         self.client = None
         self.model_name = None
         self.provider = None
@@ -28,37 +34,36 @@ class LLMService:
             logger.info("Initializing with OpenAI client.")
             self.provider = "openai"
             self.model_name = model_config["openai_model"]
-            
+
             # OpenAI client initialization
             self.client = OpenAI(api_key=self.openai_key)
-
 
         elif self.gemini_key:
             logger.info("Initializing with Gemini client.")
             self.provider = "gemini"
             self.model_name = model_config["gemini_model"]
-            
-            
+
             self.client = genai.Client(api_key=self.gemini_key)
 
-            
         else:
             raise ValueError(
                 "No valid API key found. Please set GEMINI_API_KEY or OPENAI_API_KEY in your .env file."
             )
 
-    def generate_answer(self, question, context):
+    def generate_answer(self, question, context_doc, context_json):
         """
         Generates an answer using the initialized LLM provider (Gemini or OpenAI).
         """
-        
+
         # NOTE: The system prompt (role, guidelines) is crucial for RAG performance
         system_instruction = model_config["system_instruction"]
-        
+
         user_prompt = f"""Question: {question}
 
         Context:
-        {context}
+        CHECK THE CONTEXT DOC FIRST... INFORMATION THERE ARE MORE LIKELY CORRECT
+        {context_doc}
+        {context_json}
         """
 
         try:
@@ -68,15 +73,14 @@ class LLMService:
             if self.provider == "openai":
                 messages = [
                     {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": user_prompt}
+                    {"role": "user", "content": user_prompt},
                 ]
-                
+
                 response = self.client.chat.completions.create(
                     model=self.model_name,
                     messages=messages,
                 )
                 return response.choices[0].message.content
-            
 
                 """
                 GEMINI
@@ -88,11 +92,10 @@ class LLMService:
                     contents=full_contents,
                 )
                 return response.text
-            
+
             else:
                 return "Error: LLM provider not initialized."
 
-
         except Exception as e:
-            #pass
-            return f"An error occurred with {self.provider} while generating the answer: {e}"
+            #return f"An error occurred with {self.provider} while generating the answer: {e}"
+            pass
