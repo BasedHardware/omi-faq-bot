@@ -97,5 +97,5 @@ class LLMService:
                 return "Error: LLM provider not initialized."
 
         except Exception as e:
-            # pass
-            return f"An error occurred with {self.provider} while generating the answer: {e}"
+            #return f"An error occurred with {self.provider} while generating the answer: {e}"
+            pass
