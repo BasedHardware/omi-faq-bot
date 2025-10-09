@@ -17,7 +17,7 @@ def index_docs(
     index_file: str = INDEX_FILE,
     meta_file: str = META_FILE,
     model_name: str = MODEL_NAME,
-    verbose: bool = True
+    verbose: bool = True,
 ):
     """
     Build and save vector embeddings for cleaned OMI docs.

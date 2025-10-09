@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11.13"
 dependencies = [
+    "black>=25.9.0",
     "discord-py==2.6.3",
     "frontmatter==3.0.8",
     "google-genai==1.39.1",

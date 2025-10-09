@@ -10,8 +10,10 @@ logger = logging.getLogger(__name__)
 INDEX_FILE = "data/mdx_index.joblib"
 MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
 
+
 class DocSearcher:
     """Handles loading and querying the document search index."""
+
     def __init__(self, index_file: str = INDEX_FILE):
         self.index_file = index_file
         self.docs = []
@@ -23,7 +25,9 @@ class DocSearcher:
     def load(self):
         """Load the index and sentence transformer model."""
         if not os.path.exists(self.index_file):
-            logger.warning(f"Index file not found at {self.index_file}. Search will be disabled.")
+            logger.warning(
+                f"Index file not found at {self.index_file}. Search will be disabled."
+            )
             return
 
         logger.info("🔃 Loading document index...")
@@ -31,7 +35,7 @@ class DocSearcher:
         self.docs = data["docs"]
         self.embeddings = data["embeddings"].cpu()
         self.meta = data["meta"]
-        
+
         model_name = self.meta.get("model", MODEL_NAME)
         logger.info(f"🧠 Loading sentence transformer model '{model_name}'...")
         self.model = SentenceTransformer(model_name, device="cpu")
@@ -59,11 +63,13 @@ class DocSearcher:
             s = float(score)
             if s < threshold:
                 continue
-            results.append({
-                "filename": self.docs[idx]["filename"],
-                "score": s,
-                "text": self.docs[idx]["clean_text"],
-            })
+            results.append(
+                {
+                    "filename": self.docs[idx]["filename"],
+                    "score": s,
+                    "text": self.docs[idx]["clean_text"],
+                }
+            )
 
         return results
 

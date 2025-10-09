@@ -4,6 +4,7 @@ from core.omi_docs_downloader import download_omi_docs
 from core.index_doc import index_docs
 import asyncio
 
+
 class UpdateDoc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -15,6 +16,7 @@ class UpdateDoc(commands.Cog):
         await ctx.send("⏳ Starting doc update... (this may take a moment)")
         try:
             import functools
+
             # Run blocking functions in an executor to avoid freezing the bot
             loop = asyncio.get_running_loop()
             func = functools.partial(download_omi_docs, force_update=force)
@@ -24,18 +26,19 @@ class UpdateDoc(commands.Cog):
 
             # Reload the index in the Faq cog
             faq_cog = self.bot.get_cog("Faq")
-            if faq_cog and hasattr(faq_cog, 'doc_searcher'):
+            if faq_cog and hasattr(faq_cog, "doc_searcher"):
                 faq_cog.doc_searcher.reload()
                 await ctx.send("✅ Document index reloaded in bot.")
 
             embed = discord.Embed(
                 title="✅ Doc Update Complete",
                 description="Successfully pulled latest docs from GitHub and re-indexed.",
-                color=discord.Color.green()
+                color=discord.Color.green(),
             )
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f"⚠️ Failed to update docs: {e}")
+
 
 async def setup(bot):
     await bot.add_cog(UpdateDoc(bot))

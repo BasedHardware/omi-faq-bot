@@ -22,8 +22,14 @@ def clean_mdx_text(raw: str) -> str:
 
     raw = re.sub(r"```[\s\S]*?```", "", raw)
     raw = re.sub(r"`([^`]*)`", r"\1", raw)
-    raw = re.sub(r"<Accordion(?: title=\"([^\"]*)\")?>([\s\S]*?)<\/Accordion>", r"\nAccordion: \1\n\2\n", raw)
-    raw = re.sub(r"<Card(?: title=\"([^\"]*)\")?>([\s\S]*?)<\/Card>", r"\nCard: \1\n\2\n", raw)
+    raw = re.sub(
+        r"<Accordion(?: title=\"([^\"]*)\")?>([\s\S]*?)<\/Accordion>",
+        r"\nAccordion: \1\n\2\n",
+        raw,
+    )
+    raw = re.sub(
+        r"<Card(?: title=\"([^\"]*)\")?>([\s\S]*?)<\/Card>", r"\nCard: \1\n\2\n", raw
+    )
     raw = re.sub(r"<[^>]+>", "", raw)
     raw = re.sub(r"\[([^\]]+)\]\((https?[^)]+)\)", r"\1 (\2)", raw)
     raw = re.sub(r"<(https?[^>]+)>", r"\1", raw)
@@ -34,10 +40,14 @@ def clean_mdx_text(raw: str) -> str:
     raw = re.sub(
         r"^\|.*\|\n\|[-| :]*\|\n((?:\|.*\|\n?)*)",
         lambda m: "\n".join(
-            [f"Row: {' '.join(row.strip().split('|')[1:-1])}" for row in m.group(1).strip().split("\n")]
-        ) + "\n",
+            [
+                f"Row: {' '.join(row.strip().split('|')[1:-1])}"
+                for row in m.group(1).strip().split("\n")
+            ]
+        )
+        + "\n",
         raw,
-        flags=re.M
+        flags=re.M,
     )
     raw = re.sub(r"[*_#>]+", "", raw)
     raw = re.sub(r"\n{2,}", "\n\n", raw)
@@ -45,7 +55,9 @@ def clean_mdx_text(raw: str) -> str:
     return raw.strip()
 
 
-def _clean_all_docs(in_dir: str = "data/omi_docs", out_file: str = "data/clean_docs.json"):
+def _clean_all_docs(
+    in_dir: str = "data/omi_docs", out_file: str = "data/clean_docs.json"
+):
     in_path = Path(in_dir)
     if not in_path.exists():
         raise FileNotFoundError(f"{in_dir} not found.")
@@ -59,10 +71,7 @@ def _clean_all_docs(in_dir: str = "data/omi_docs", out_file: str = "data/clean_d
             print(f"⚠️ Skipping empty file: {path.name}")
             continue
 
-        all_docs.append({
-            "filename": path.name,
-            "clean_text": clean
-        })
+        all_docs.append({"filename": path.name, "clean_text": clean})
         print(f"✅ Cleaned {path.name} ({len(clean)} chars)")
 
     with open(out_file, "w", encoding="utf-8") as f:
@@ -75,7 +84,7 @@ def download_omi_docs(
     api_url: str = "https://api.github.com/repos/BasedHardware/omi/git/trees/main?recursive=1",
     raw_base_url: str = "https://raw.githubusercontent.com/BasedHardware/omi/main/",
     output_dir: str = "data/omi_docs",
-    force_update: bool = False
+    force_update: bool = False,
 ):
     """
     Download or update all .mdx docs from OMI (docs/doc and docs/onboarding),
@@ -90,7 +99,10 @@ def download_omi_docs(
 
     for item in tree:
         if not (
-            (item["path"].startswith("docs/doc/") or item["path"].startswith("docs/onboarding/"))
+            (
+                item["path"].startswith("docs/doc/")
+                or item["path"].startswith("docs/onboarding/")
+            )
             and item["path"].endswith(".mdx")
         ):
             continue
