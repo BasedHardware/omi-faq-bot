@@ -1,32 +1,48 @@
 import discord
 from discord.ext import commands
 from core.indexer import FAQIndexer
-from core.query_doc import query_docs
+from core.query_doc import DocSearcher
 from core.llm import LLMService
 import tomli
 import asyncio
+import logging
+import re
 
-
+logger = logging.getLogger(__name__)
 
 with open("model.toml", "rb") as f:
     model_config = tomli.load(f)
 
 
+def extract_url(text):
+    """Extract the first URL from text"""
+    url_pattern = r'https?://[^\s\)\]`]+'
+    match = re.search(url_pattern, text)
+    return match.group(0) if match else None
+
 class Faq(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.indexer = FAQIndexer()
+        self.doc_searcher = DocSearcher()
         self.llm = LLMService()
 
 
     @commands.command()
     @commands.is_owner()
     async def reload_index(self, ctx):
-        """Reloads the FAQ index."""
-        if await self.indexer.load_index():
+        """Reloads the FAQ and Document indexes."""
+        faq_reloaded = await self.indexer.load_index()
+        if faq_reloaded:
             await ctx.send("✅ FAQ index reloaded successfully.")
         else:
             await ctx.send("❌ Error reloading FAQ index.")
+
+        try:
+            self.doc_searcher.reload()
+            await ctx.send("✅ Document index reloaded successfully.")
+        except Exception as e:
+            await ctx.send(f"❌ Error reloading document index: {e}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -47,7 +63,7 @@ class Faq(commands.Cog):
                     pass
             
             if question:
-                results_doc = query_docs(question)
+                results_doc = self.doc_searcher.search(question)
                 results = await self.indexer.search(question, top_k=5)
 
                 if results_doc or results:
@@ -59,19 +75,26 @@ class Faq(commands.Cog):
                                 for r in results_doc
                             ])
 
-
-                    #print(context)
                     llm_answer = self.llm.generate_answer(question, context_doc, context_json)
                     
-                    print(llm_answer)
                     embed = discord.Embed(
                         title="💡 Answer",
                         description=llm_answer,
                         color=discord.Color.blue()
                     )
                     
-                    await message.reply(embed=embed)
 
+                    # Check for URL and add field only if it exists
+                    url = extract_url(llm_answer)
+
+                    if url:
+                        embed.add_field(
+                            name="🔗",
+                            value=f"[Link]({url})",
+                            inline=True
+                        )
+
+                    await message.reply(embed=embed)
 
                 
                 elif not question:

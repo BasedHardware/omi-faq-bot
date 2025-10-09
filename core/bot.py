@@ -21,9 +21,17 @@ class OmiDiscordBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         from .omi_docs_downloader import download_omi_docs
+        from .index_doc import index_docs
+        import functools
         # Run synchronous function in thread-safe way
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, download_omi_docs)
+        logger.info("Downloading OMI docs on startup...")
+        # Use functools.partial to pass keyword argument to executor
+        func = functools.partial(download_omi_docs, force_update=False)
+        await loop.run_in_executor(None, func)
+        logger.info("Indexing OMI docs on startup...")
+        await loop.run_in_executor(None, index_docs)
+        logger.info("Doc download and indexing complete.")
 
 
     async def on_ready(self):

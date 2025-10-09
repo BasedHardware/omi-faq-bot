@@ -14,34 +14,23 @@ def _file_hash(path: str) -> str:
 
 def clean_mdx_text(raw: str) -> str:
     """Clean .mdx into structured plain text suitable for embeddings."""
-    # Remove YAML frontmatter
     if raw.strip().startswith("---"):
         try:
             raw = frontmatter.loads(raw).content
         except Exception:
             raw = re.sub(r"^---.*?---", "", raw, flags=re.S)
 
-    # Remove fenced code blocks (```...```)
     raw = re.sub(r"```[\s\S]*?```", "", raw)
-    # Remove inline code (`code`)
     raw = re.sub(r"`([^`]*)`", r"\1", raw)
-    # Handle <Card> / <Accordion> components
     raw = re.sub(r"<Accordion(?: title=\"([^\"]*)\")?>([\s\S]*?)<\/Accordion>", r"\nAccordion: \1\n\2\n", raw)
     raw = re.sub(r"<Card(?: title=\"([^\"]*)\")?>([\s\S]*?)<\/Card>", r"\nCard: \1\n\2\n", raw)
-    # Remove remaining HTML/JSX tags
     raw = re.sub(r"<[^>]+>", "", raw)
-    # Convert links: [text](url) → text (url)
     raw = re.sub(r"\[([^\]]+)\]\((https?[^)]+)\)", r"\1 (\2)", raw)
-    # Preserve bare URLs
     raw = re.sub(r"<(https?[^>]+)>", r"\1", raw)
-    # Convert images to text placeholders
     raw = re.sub(r"!\[([^\]]*)\]\([^)]+\)", r"Image: \1", raw)
-    # Headings → readable section markers
     raw = re.sub(r"^#{1,6}\s*(.*)", r"\n\n\1:\n", raw, flags=re.M)
-    # Bullet points
     raw = re.sub(r"^\s*[-*+]\s+", "• ", raw, flags=re.M)
     raw = re.sub(r"^\s*\d+\.\s+", "• ", raw, flags=re.M)
-    # Simplify tables
     raw = re.sub(
         r"^\|.*\|\n\|[-| :]*\|\n((?:\|.*\|\n?)*)",
         lambda m: "\n".join(
@@ -50,7 +39,6 @@ def clean_mdx_text(raw: str) -> str:
         raw,
         flags=re.M
     )
-    # Clean markdown noise
     raw = re.sub(r"[*_#>]+", "", raw)
     raw = re.sub(r"\n{2,}", "\n\n", raw)
     raw = re.sub(r"\s{2,}", " ", raw)
@@ -58,7 +46,6 @@ def clean_mdx_text(raw: str) -> str:
 
 
 def _clean_all_docs(in_dir: str = "data/omi_docs", out_file: str = "data/clean_docs.json"):
-    """Clean all .mdx docs into a single JSON file."""
     in_path = Path(in_dir)
     if not in_path.exists():
         raise FileNotFoundError(f"{in_dir} not found.")
@@ -91,7 +78,8 @@ def download_omi_docs(
     force_update: bool = False
 ):
     """
-    Download or update .mdx docs from the OMI repo, then clean them.
+    Download or update all .mdx docs from OMI (docs/doc and docs/onboarding),
+    auto-renaming duplicates using their folder path.
     """
     os.makedirs(output_dir, exist_ok=True)
     response = requests.get(api_url)
@@ -101,11 +89,17 @@ def download_omi_docs(
     updated, skipped = 0, 0
 
     for item in tree:
-        if not (item["path"].startswith("docs/doc/") and item["path"].endswith(".mdx")):
+        if not (
+            (item["path"].startswith("docs/doc/") or item["path"].startswith("docs/onboarding/"))
+            and item["path"].endswith(".mdx")
+        ):
             continue
 
         url = raw_base_url + item["path"]
-        filename = os.path.join(output_dir, os.path.basename(item["path"]))
+
+        # 🔹 Generate safe unique filename with path context
+        rel_path = item["path"].replace("docs/", "").replace("/", "__")
+        filename = os.path.join(output_dir, rel_path)
 
         r = requests.get(url)
         r.raise_for_status()
@@ -122,7 +116,7 @@ def download_omi_docs(
             f.write(new_data)
         updated += 1
 
-    print(f"Docs update complete: {updated} updated, {skipped} skipped.")
+    print(f"📥 Docs update complete: {updated} updated, {skipped} skipped.")
 
-    # 🧹 Clean docs into JSON after update
+    # 🧹 Clean all docs into JSON after update
     _clean_all_docs(output_dir)
