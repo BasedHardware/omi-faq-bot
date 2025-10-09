@@ -131,7 +131,7 @@ class Faq(commands.Cog):
                     if mention_moderator:
                         await asyncio.sleep(10)  # Wait 10 seconds
                         await message.reply(
-                            f"<@{mod_id}> - A user needs your assistance. **Please update `FAQ.json` with the new information if needed.**"
+                            f"<@{mod_id}> - A user needs your assistance."
                         )
 
             elif not self.indexer.get_stats()["index_loaded"]:
