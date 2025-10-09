@@ -11,6 +11,12 @@ with open("model.toml", "rb") as f:
     model_config = tomli.load(f)
 
 
+if os.getenv("OPENAI_MODEL"):
+    model_config["openai_model"] = os.getenv("OPENAI_MODEL")
+
+if os.getenv("GEMINI_MODEL"):
+    model_config["gemini_model"] = os.getenv("GEMINI_MODEL")
+
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
